@@ -21,14 +21,12 @@
         .container {
             display: flex;
             min-height: 100vh;
-            max-width: 1400px;
-            margin: 0 auto;
+            width: 100%;
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
-            border-radius: 20px;
-            margin: 20px;
             overflow: hidden;
             box-shadow: 0 25px 45px rgba(0, 0, 0, 0.1);
+            position: relative;
         }
 
         .sidebar {
@@ -37,6 +35,36 @@
             padding: 2rem;
             overflow-y: auto;
             border-right: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+            position: relative;
+            z-index: 100;
+        }
+
+        .sidebar.hidden {
+            transform: translateX(-100%);
+        }
+
+        .sidebar-toggle {
+            position: fixed;
+            top: 2rem;
+            left: 2rem;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 15px;
+            padding: 1rem;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-toggle:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: scale(1.05);
+        }
+
+        .sidebar-toggle.sidebar-visible {
+            left: 22rem;
         }
 
         .sidebar h1 {
@@ -78,7 +106,7 @@
             transition: all 0.3s ease;
             border: 2px solid transparent;
             position: relative;
-            overflow: hidden;
+            overflow: visible;
         }
 
         .list-item:hover {
@@ -91,10 +119,38 @@
             background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
         }
 
+        .list-header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
         .list-title {
             font-weight: bold;
-            margin-bottom: 0.5rem;
             color: #4a5568;
+            flex: 1;
+        }
+
+        .delete-list-btn {
+            background: #e53e3e;
+            color: white;
+            border: none;
+            padding: 0.3rem 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .list-item:hover .delete-list-btn {
+            opacity: 1;
+        }
+
+        .delete-list-btn:hover {
+            background: #c53030;
+            transform: scale(1.05);
         }
 
         .list-progress {
@@ -130,6 +186,12 @@
             padding: 2rem;
             background: rgba(255, 255, 255, 0.05);
             overflow-y: auto;
+            margin-left: 0;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.sidebar-hidden {
+            margin-left: 0;
         }
 
         .welcome-screen {
@@ -155,6 +217,7 @@
             align-items: center;
             margin-bottom: 2rem;
             color: white;
+            margin-top: 4rem;
         }
 
         .list-header h2 {
@@ -383,6 +446,7 @@
             transition: transform 0.3s ease;
             z-index: 1001;
             max-width: 350px;
+            animation: pulse 2s infinite;
         }
 
         .notification.show {
@@ -393,24 +457,64 @@
             margin-bottom: 0.5rem;
         }
 
+        .urgent-notification {
+            background: linear-gradient(135deg, #ff4757, #c44569);
+            animation: urgentPulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3); }
+            50% { box-shadow: 0 10px 30px rgba(255, 107, 107, 0.6); }
+            100% { box-shadow: 0 10px 30px rgba(255, 107, 107, 0.3); }
+        }
+
+        @keyframes urgentPulse {
+            0% { 
+                box-shadow: 0 10px 30px rgba(255, 71, 87, 0.5);
+                transform: translateX(0) scale(1);
+            }
+            50% { 
+                box-shadow: 0 15px 40px rgba(255, 71, 87, 0.8);
+                transform: translateX(0) scale(1.02);
+            }
+            100% { 
+                box-shadow: 0 10px 30px rgba(255, 71, 87, 0.5);
+                transform: translateX(0) scale(1);
+            }
+        }
+
         @media (max-width: 768px) {
             .container {
-                flex-direction: column;
-                margin: 10px;
-                border-radius: 15px;
+                margin: 0;
+                border-radius: 0;
             }
 
             .sidebar {
-                width: 100%;
-                max-height: 300px;
-                border-right: none;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+                width: 280px;
+                position: fixed;
+                height: 100vh;
+                z-index: 200;
+            }
+
+            .sidebar-toggle {
+                left: 1rem;
+                top: 1rem;
+            }
+
+            .sidebar-toggle.sidebar-visible {
+                left: 16rem;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
             }
 
             .list-header {
                 flex-direction: column;
                 gap: 1rem;
                 text-align: center;
+                margin-top: 5rem;
             }
 
             .timer-display {
@@ -420,6 +524,7 @@
 
             .welcome-screen h2 {
                 font-size: 2rem;
+                margin-top: 3rem;
             }
 
             .notification {
@@ -427,6 +532,7 @@
                 right: 1rem;
                 left: 1rem;
                 transform: translateY(-200px);
+                max-width: none;
             }
 
             .notification.show {
@@ -436,8 +542,12 @@
     </style>
 </head>
 <body>
+    <button class="sidebar-toggle" id="sidebar-toggle" onclick="toggleSidebar()">
+        ☰
+    </button>
+
     <div class="container">
-        <div class="sidebar">
+        <div class="sidebar" id="sidebar">
             <h1>TaskFlow</h1>
             <button class="new-list-btn" onclick="openNewListModal()">
                 ✨ Create New List
@@ -447,7 +557,7 @@
             </div>
         </div>
 
-        <div class="main-content">
+        <div class="main-content" id="main-content">
             <div id="welcome-screen" class="welcome-screen">
                 <h2>🚀 Welcome to TaskFlow</h2>
                 <p>Create your first to-do list to get started!</p>
@@ -502,9 +612,17 @@
 
     <!-- Notification -->
     <div id="notification" class="notification">
-        <h4>⏰ Time Running Out!</h4>
-        <p>Only 3 minutes left for your current list!</p>
+        <h4 id="notification-title">⏰ Time Running Out!</h4>
+        <p id="notification-message">Only 3 minutes left for your current list!</p>
     </div>
+
+    <!-- Audio elements for sound notifications -->
+    <audio id="warning-sound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEASAAARSAAAAIABBAAAQBZGF0YUUAAABSAAIAQgBFAFAAUQBiAFMAYwBbAGMAbABdAG4AZQB2AG8AeAB5AH4AfACBAIkAhQCLAI4AlgCSAJoAnQClAKEAqQCtALUAsQC5AL0AxQDBD8PDw8/Pz8/DDGAA" type="audio/wav">
+    </audio>
+    <audio id="urgent-sound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRvIGAABXQVZFZm10IBAAAAABAAEASAAARSAAAAIABBAAAQBZGF0YZQAAABSAAEAQgBEAFAAUABiAFMAYwBcAGMAbABdAG4AZQBgAG8AeAB5AIkAhgCMAI4AlgCSAJoAnQClAKEAqQCtALUAsQC5AL0AxQDBD8NNA8/PwUHDDGAA" type="audio/wav">
+    </audio>
 
     <script>
         let lists = [];
@@ -514,6 +632,8 @@
         let isTimerRunning = false;
         let timerDuration = 0;
         let notificationShown = false;
+        let urgentNotificationShown = false;
+        let sidebarVisible = true;
 
         // Initialize the app
         function init() {
@@ -524,15 +644,69 @@
             }
         }
 
+        // Sidebar toggle functionality
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            const toggleBtn = document.getElementById('sidebar-toggle');
+
+            sidebarVisible = !sidebarVisible;
+            
+            if (sidebarVisible) {
+                sidebar.classList.remove('hidden');
+                mainContent.classList.remove('sidebar-hidden');
+                toggleBtn.classList.add('sidebar-visible');
+                toggleBtn.innerHTML = '✕';
+            } else {
+                sidebar.classList.add('hidden');
+                mainContent.classList.add('sidebar-hidden');
+                toggleBtn.classList.remove('sidebar-visible');
+                toggleBtn.innerHTML = '☰';
+            }
+        }
+
+        // Create audio context for sound generation
+        function createNotificationSound(frequency = 800, duration = 200) {
+            if (typeof AudioContext !== 'undefined' || typeof webkitAudioContext !== 'undefined') {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                const audioContext = new AudioContext();
+                
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+                oscillator.type = 'sine';
+                
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration / 1000);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration / 1000);
+            }
+        }
+
+        // Play warning sound
+        function playWarningSound() {
+            createNotificationSound(800, 300);
+        }
+
+        // Play urgent sound
+        function playUrgentSound() {
+            createNotificationSound(1000, 150);
+            setTimeout(() => createNotificationSound(1200, 150), 200);
+            setTimeout(() => createNotificationSound(1400, 150), 400);
+        }
+
         // Save lists to memory
         function saveLists() {
             // In a real app, this would save to localStorage or a database
-            // For this demo, we're keeping everything in memory as per requirements
         }
 
         // Load lists from memory
         function loadLists() {
-            // In a real app, this would load from localStorage or a database
             // Starting with empty lists array
         }
 
@@ -553,7 +727,7 @@
                 id: Date.now(),
                 title: title,
                 tasks: [],
-                timerDuration: duration * 60, // Convert to seconds
+                timerDuration: duration * 60,
                 createdAt: new Date()
             };
 
@@ -567,6 +741,28 @@
             timerInput.value = '';
         }
 
+        // Delete list
+        function deleteList(listId, event) {
+            event.stopPropagation();
+            
+            if (confirm('Are you sure you want to delete this list? This action cannot be undone.')) {
+                lists = lists.filter(l => l.id !== listId);
+                
+                if (currentListId === listId) {
+                    currentListId = null;
+                    document.getElementById('welcome-screen').style.display = 'block';
+                    document.getElementById('list-content').style.display = 'none';
+                    
+                    if (lists.length > 0) {
+                        selectList(lists[0].id);
+                    }
+                }
+                
+                saveLists();
+                renderLists();
+            }
+        }
+
         // Select a list
         function selectList(listId) {
             currentListId = listId;
@@ -574,19 +770,17 @@
             
             if (!list) return;
 
-            // Update UI
             document.getElementById('welcome-screen').style.display = 'none';
             document.getElementById('list-content').style.display = 'block';
             document.getElementById('current-list-title').textContent = list.title;
             
-            // Set timer
             timerDuration = list.timerDuration;
             currentTime = 0;
             isTimerRunning = false;
             notificationShown = false;
+            urgentNotificationShown = false;
             updateTimerDisplay();
             
-            // Render tasks and lists
             renderTasks();
             renderLists();
         }
@@ -654,7 +848,10 @@
                 listElement.className = `list-item ${list.id === currentListId ? 'active' : ''}`;
                 listElement.onclick = () => selectList(list.id);
                 listElement.innerHTML = `
-                    <div class="list-title">${list.title}</div>
+                    <div class="list-header-bar">
+                        <div class="list-title">${list.title}</div>
+                        <button class="delete-list-btn" onclick="deleteList(${list.id}, event)">×</button>
+                    </div>
                     <div class="list-progress">${completedTasks}/${totalTasks} completed</div>
                     <div class="progress-bar">
                         <div class="progress-fill" style="width: ${progressPercent}%"></div>
@@ -698,7 +895,7 @@
             timerInterval = setInterval(() => {
                 currentTime++;
                 updateTimerDisplay();
-                checkTimeWarning();
+                checkTimeWarnings();
                 
                 if (currentTime >= timerDuration) {
                     pauseTimer();
@@ -719,6 +916,7 @@
             pauseTimer();
             currentTime = 0;
             notificationShown = false;
+            urgentNotificationShown = false;
             updateTimerDisplay();
             hideNotification();
         }
@@ -733,20 +931,58 @@
             document.getElementById('timer-display').textContent = display;
         }
 
-        function checkTimeWarning() {
+        function checkTimeWarnings() {
             const remainingTime = timerDuration - currentTime;
-            if (remainingTime <= 180 && remainingTime > 0 && !notificationShown) { // 3 minutes = 180 seconds
-                showNotification();
+            const completionPercentage = getTaskCompletionPercentage();
+            
+            // 5% time remaining urgent warning with incomplete tasks
+            if (remainingTime <= timerDuration * 0.05 && remainingTime > 0 && !urgentNotificationShown && completionPercentage < 100) {
+                showUrgentNotification();
+                urgentNotificationShown = true;
+                playUrgentSound();
+            }
+            // 3 minutes warning
+            else if (remainingTime <= 180 && remainingTime > 0 && !notificationShown) {
+                showWarningNotification();
                 notificationShown = true;
+                playWarningSound();
             }
         }
 
-        function showNotification() {
+        function getTaskCompletionPercentage() {
+            const list = lists.find(l => l.id === currentListId);
+            if (!list || list.tasks.length === 0) return 100;
+            
+            const completedTasks = list.tasks.filter(t => t.completed).length;
+            return (completedTasks / list.tasks.length) * 100;
+        }
+
+        function showWarningNotification() {
             const notification = document.getElementById('notification');
-            notification.classList.add('show');
+            const title = document.getElementById('notification-title');
+            const message = document.getElementById('notification-message');
+            
+            title.textContent = '⏰ Time Running Out!';
+            message.textContent = 'Only 3 minutes left for your current list!';
+            notification.className = 'notification show';
+            
             setTimeout(() => {
                 hideNotification();
             }, 5000);
+        }
+
+        function showUrgentNotification() {
+            const notification = document.getElementById('notification');
+            const title = document.getElementById('notification-title');
+            const message = document.getElementById('notification-message');
+            
+            title.textContent = '🚨 URGENT: Time Almost Up!';
+            message.textContent = 'Only 5% of time remaining and tasks are incomplete! Hurry up!';
+            notification.className = 'notification urgent-notification show';
+            
+            setTimeout(() => {
+                hideNotification();
+            }, 8000);
         }
 
         function hideNotification() {
