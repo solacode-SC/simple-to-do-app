@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -35,13 +36,16 @@
             padding: 2rem;
             overflow-y: auto;
             border-right: 1px solid rgba(255, 255, 255, 0.2);
-            transition: transform 0.3s ease;
+            transition: width 0.3s ease, padding 0.3s ease;
             position: relative;
             z-index: 100;
         }
 
         .sidebar.hidden {
-            transform: translateX(-100%);
+            width: 0;
+            padding: 0;
+            border-right: none;
+            overflow: hidden;
         }
 
         .sidebar-toggle {
@@ -186,12 +190,6 @@
             padding: 2rem;
             background: rgba(255, 255, 255, 0.05);
             overflow-y: auto;
-            margin-left: 0;
-            transition: margin-left 0.3s ease;
-        }
-
-        .main-content.sidebar-hidden {
-            margin-left: 0;
         }
 
         .welcome-screen {
@@ -433,6 +431,64 @@
             margin-bottom: 1rem;
         }
 
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .confirm-btn {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(72, 187, 120, 0.3);
+        }
+
+        .confirm-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(72, 187, 120, 0.4);
+        }
+
+        .delete-btn {
+            background: linear-gradient(135deg, #e53e3e, #c53030);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(229, 62, 62, 0.3);
+        }
+
+        .delete-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(229, 62, 62, 0.4);
+        }
+
+        .cancel-btn {
+            background: linear-gradient(135deg, #cbd5e0, #a0aec0);
+            color: #333;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(203, 213, 224, 0.3);
+        }
+
+        .cancel-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(203, 213, 224, 0.4);
+        }
+
         .notification {
             position: fixed;
             top: 2rem;
@@ -496,6 +552,13 @@
                 z-index: 200;
             }
 
+            .sidebar.hidden {
+                width: 0;
+                padding: 0;
+                border-right: none;
+                overflow: hidden;
+            }
+
             .sidebar-toggle {
                 left: 1rem;
                 top: 1rem;
@@ -506,7 +569,6 @@
             }
 
             .main-content {
-                margin-left: 0;
                 padding: 1rem;
             }
 
@@ -610,6 +672,31 @@
         </div>
     </div>
 
+    <!-- Time Up Modal -->
+    <div id="time-up-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeTimeUpModal()">&times;</span>
+            <h3>⏰ Time's Up!</h3>
+            <p id="time-up-message"></p>
+            <div class="modal-buttons">
+                <button class="confirm-btn" onclick="closeTimeUpModal()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Delete Modal -->
+    <div id="confirm-delete-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeConfirmDeleteModal()">&times;</span>
+            <h3>Are you sure?</h3>
+            <p>This will delete "<span id="delete-list-name"></span>" and all its tasks. This action cannot be undone.</p>
+            <div class="modal-buttons">
+                <button class="delete-btn" onclick="confirmDelete()">Delete</button>
+                <button class="cancel-btn" onclick="closeConfirmDeleteModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Notification -->
     <div id="notification" class="notification">
         <h4 id="notification-title">⏰ Time Running Out!</h4>
@@ -634,6 +721,7 @@
         let notificationShown = false;
         let urgentNotificationShown = false;
         let sidebarVisible = true;
+        let pendingDeleteListId = null;
 
         // Initialize the app
         function init() {
@@ -647,19 +735,16 @@
         // Sidebar toggle functionality
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
-            const mainContent = document.getElementById('main-content');
             const toggleBtn = document.getElementById('sidebar-toggle');
 
             sidebarVisible = !sidebarVisible;
             
             if (sidebarVisible) {
                 sidebar.classList.remove('hidden');
-                mainContent.classList.remove('sidebar-hidden');
                 toggleBtn.classList.add('sidebar-visible');
                 toggleBtn.innerHTML = '✕';
             } else {
                 sidebar.classList.add('hidden');
-                mainContent.classList.add('sidebar-hidden');
                 toggleBtn.classList.remove('sidebar-visible');
                 toggleBtn.innerHTML = '☰';
             }
@@ -741,14 +826,23 @@
             timerInput.value = '';
         }
 
-        // Delete list
-        function deleteList(listId, event) {
+        // Show confirm delete modal
+        function showConfirmDelete(listId, event) {
             event.stopPropagation();
-            
-            if (confirm('Are you sure you want to delete this list? This action cannot be undone.')) {
-                lists = lists.filter(l => l.id !== listId);
+            pendingDeleteListId = listId;
+            const list = lists.find(l => l.id === listId);
+            if (list) {
+                document.getElementById('delete-list-name').textContent = list.title;
+                document.getElementById('confirm-delete-modal').classList.add('active');
+            }
+        }
+
+        // Confirm delete list
+        function confirmDelete() {
+            if (pendingDeleteListId !== null) {
+                lists = lists.filter(l => l.id !== pendingDeleteListId);
                 
-                if (currentListId === listId) {
+                if (currentListId === pendingDeleteListId) {
                     currentListId = null;
                     document.getElementById('welcome-screen').style.display = 'block';
                     document.getElementById('list-content').style.display = 'none';
@@ -760,7 +854,14 @@
                 
                 saveLists();
                 renderLists();
+                pendingDeleteListId = null;
             }
+            closeConfirmDeleteModal();
+        }
+
+        // Close confirm delete modal
+        function closeConfirmDeleteModal() {
+            document.getElementById('confirm-delete-modal').classList.remove('active');
         }
 
         // Select a list
@@ -850,7 +951,7 @@
                 listElement.innerHTML = `
                     <div class="list-header-bar">
                         <div class="list-title">${list.title}</div>
-                        <button class="delete-list-btn" onclick="deleteList(${list.id}, event)">×</button>
+                        <button class="delete-list-btn" onclick="showConfirmDelete(${list.id}, event)">×</button>
                     </div>
                     <div class="list-progress">${completedTasks}/${totalTasks} completed</div>
                     <div class="progress-bar">
@@ -899,7 +1000,7 @@
                 
                 if (currentTime >= timerDuration) {
                     pauseTimer();
-                    alert('⏰ Time\'s up! Great job working on your tasks!');
+                    showTimeUpModal();
                 }
             }, 1000);
         }
@@ -982,12 +1083,29 @@
             
             setTimeout(() => {
                 hideNotification();
-            }, 8000);
+            }, 5000);
         }
 
         function hideNotification() {
             const notification = document.getElementById('notification');
             notification.classList.remove('show');
+        }
+
+        // Show time up modal
+        function showTimeUpModal() {
+            const modal = document.getElementById('time-up-modal');
+            const message = document.getElementById('time-up-message');
+            const elapsedMinutes = Math.floor(currentTime / 60);
+            const list = lists.find(l => l.id === currentListId);
+            const completed = list ? list.tasks.filter(t => t.completed).length : 0;
+            const total = list ? list.tasks.length : 0;
+            message.textContent = `You worked for ${elapsedMinutes} minutes and completed ${completed}/${total} tasks. Great job!`;
+            modal.classList.add('active');
+        }
+
+        // Close time up modal
+        function closeTimeUpModal() {
+            document.getElementById('time-up-modal').classList.remove('active');
         }
 
         // Modal functions
@@ -1013,10 +1131,22 @@
             }
         }
 
-        // Close modal on outside click
+        // Close modals on outside click
         document.getElementById('new-list-modal').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeNewListModal();
+            }
+        });
+
+        document.getElementById('time-up-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeTimeUpModal();
+            }
+        });
+
+        document.getElementById('confirm-delete-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeConfirmDeleteModal();
             }
         });
 
