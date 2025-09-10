@@ -1,220 +1,90 @@
-# 🚀 TaskFlow - Advanced To-Do App
+TaskFlow - Advanced To-Do App
+Overview
+TaskFlow is a modern, feature-rich to-do list application built with HTML, CSS, and JavaScript. It provides an intuitive interface for managing tasks and lists, complete with a timer feature to enhance productivity. The application is designed with a sleek, responsive UI and includes advanced features like notifications, modals, and sound alerts.
+Features
 
-![TaskFlow Banner](https://via.placeholder.com/800x200/667eea/ffffff?text=TaskFlow+-+Advanced+To-Do+App)
+Task Management: Create, edit, complete, and delete tasks within multiple to-do lists.
+Timer Functionality: Set timers for each list to track work sessions, with automatic notifications for time warnings.
+Responsive Sidebar: Toggleable sidebar that fully collapses to maximize workspace.
+Notifications: Auto-dismissing notifications for time warnings (3 minutes and 5% time remaining) with sound alerts.
+Modals:
+New list creation modal.
+Time-up modal displaying session duration and task completion stats.
+Confirmation modal for list deletion to prevent accidental data loss.
 
-A modern, feature-rich to-do application with multiple list management, smart timers, and a beautiful responsive design inspired by FreeCodeCamp's aesthetic.
 
-## ✨ Features
+Progress Tracking: Visual progress bars for task completion in each list.
+Responsive Design: Optimized for both desktop and mobile devices with adaptive layouts.
+Keyboard Shortcuts: Press Enter to quickly add tasks or create new lists.
+Visual Feedback: Smooth animations and hover effects for an engaging user experience.
 
-### 📋 **Multi-List Management**
-- Create unlimited to-do lists with custom titles
-- Visual progress tracking for each list (e.g., "3/7 completed")
-- Beautiful progress bars with gradient fills
-- Easy list switching with sidebar navigation
+Installation
 
-### ⏰ **Smart Timer System**
-- Customizable timer duration for each list (1-480 minutes)
-- Real-time countdown display
-- Start, pause, and reset functionality
-- **3-minute warning notification** system
-- Timer persistence while working on tasks
+Clone or Download: Download the project files or clone the repository to your local machine.
+Open index.html: Place the index.html file in a web server directory or open it directly in a modern web browser (e.g., Chrome, Firefox, Edge).
+Dependencies: No external dependencies are required; the app uses vanilla JavaScript and embedded audio files for notifications.
 
-### ✅ **Advanced Task Management**
-- Quick task addition with Enter key support
-- One-click task completion toggle
-- Visual completion states with smooth animations
-- Hover-to-reveal delete functionality
-- Task statistics and progress tracking
+Usage
 
-### 🎨 **Stunning Design**
-- **Glassmorphism UI** with blur effects and transparency
-- Gradient backgrounds and smooth animations
-- FreeCodeCamp-inspired clean aesthetic
-- Responsive design for all devices
-- Dark/light theme compatibility
+Create a List:
 
-### 📱 **Mobile-Optimized**
-- Fully responsive layout
-- Touch-friendly interface
-- Collapsible sidebar for mobile devices
-- Optimized for both portrait and landscape orientations
+Click the "Create New List" button in the sidebar.
+Enter a list title and optional timer duration (in minutes) in the modal.
+Press "Create List" or hit Enter to add the list.
 
-## 🔧 Technologies Used
 
-- **HTML5** - Semantic structure
-- **CSS3** - Modern styling with gradients, animations, and glassmorphism
-- **Vanilla JavaScript** - No frameworks, pure JS functionality
-- **Responsive Design** - Mobile-first approach
-- **Local Storage** - Data persistence (can be easily implemented)
+Manage Tasks:
 
-## 🚀 Getting Started
+Select a list from the sidebar to view its tasks.
+Add tasks using the input field and "Add Task" button or Enter key.
+Check tasks to mark them as completed or click "Delete" to remove them.
 
-### Prerequisites
-- A modern web browser (Chrome, Firefox, Safari, Edge)
-- No additional dependencies or installations required
 
-### Installation
+Timer Controls:
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/taskflow-todo-app.git
-   ```
+Start, pause, or reset the timer using the buttons in the list header.
+Receive notifications when 3 minutes or 5% of the time remains.
+A modal appears when the timer ends, showing session duration and completed tasks.
 
-2. **Navigate to the project directory**
-   ```bash
-   cd taskflow-todo-app
-   ```
 
-3. **Open the application**
-   ```bash
-   # Simply open index.html in your browser
-   open index.html
-   # Or use a local server
-   python -m http.server 8000
-   ```
+Delete Lists:
 
-4. **Start using TaskFlow!**
-   - Open your browser and navigate to the file or `http://localhost:8000`
+Click the "×" button on a list in the sidebar to open a confirmation modal.
+Confirm or cancel the deletion.
 
-## 📖 How to Use
 
-### Creating Your First List
-1. Click the **"✨ Create New List"** button
-2. Enter a descriptive title for your list
-3. Set the timer duration (in minutes)
-4. Click **"Create List"** to start
+Toggle Sidebar:
 
-### Managing Tasks
-- **Add Task**: Type in the task field and press `Enter` or click "Add Task"
-- **Complete Task**: Click the circular checkbox next to any task
-- **Delete Task**: Hover over a task and click the red "Delete" button
-- **View Progress**: Check the sidebar for completion status (e.g., "3/7 completed")
+Use the ☰ button to show/hide the sidebar, which collapses fully when hidden.
 
-### Using the Timer
-- **Start Timer**: Click "Start" to begin your focused work session
-- **Pause Timer**: Click "Pause" to temporarily stop the timer
-- **Reset Timer**: Click "Reset" to return to the original duration
-- **Warning System**: Get notified when only 3 minutes remain!
 
-## 🎯 Key Features Showcase
 
-### Smart Notifications
-```javascript
-// 3-minute warning system
-function checkTimeWarning() {
-    const remainingTime = timerDuration - currentTime;
-    if (remainingTime <= 180 && !notificationShown) {
-        showNotification();
-        notificationShown = true;
-    }
-}
-```
+File Structure
 
-### Progress Tracking
-- Real-time completion percentages
-- Visual progress bars with smooth animations
-- Task counters (completed/total)
+index.html: The main application file containing HTML, CSS, and JavaScript.
+Embedded audio files (base64-encoded WAV) for warning and urgent notifications.
 
-### Responsive Design
-- Mobile-first approach
-- Flexible grid system
-- Touch-optimized controls
+Technical Details
 
-## 🎨 Design Philosophy
+Frontend: Built with HTML5, CSS3, and vanilla JavaScript.
+Styling: Uses CSS Flexbox for layout, CSS animations for transitions, and a gradient-based theme.
+Audio: Utilizes Web Audio API for notification sounds with fallback to embedded WAV files.
+Storage: Currently uses in-memory storage (data is not persisted across sessions). Future enhancements could include localStorage or a backend database.
+Responsive Design: Media queries ensure compatibility with mobile devices (below 768px).
 
-TaskFlow follows modern web design principles:
+Limitations
 
-- **Minimalism**: Clean, uncluttered interface
-- **Accessibility**: High contrast ratios and semantic HTML
-- **Performance**: Lightweight, fast-loading application
-- **User Experience**: Intuitive navigation and feedback
-- **Visual Hierarchy**: Clear typography and spacing
+Data Persistence: Task and list data are not saved between sessions. Consider adding localStorage or a backend for persistence.
+Browser Compatibility: Tested on modern browsers; older browsers may not support all features (e.g., Web Audio API).
+Timer Accuracy: Relies on JavaScript's setInterval, which may have minor drift over long periods.
 
-## 🔮 Future Enhancements
+Future Enhancements
 
-- [ ] **Data Persistence**: Local storage implementation
-- [ ] **Categories/Tags**: Organize tasks with labels
-- [ ] **Dark/Light Theme**: Toggle between themes
-- [ ] **Export/Import**: Backup and restore functionality
-- [ ] **Collaboration**: Share lists with team members
-- [ ] **Analytics**: Track productivity metrics
-- [ ] **Notifications**: Desktop and push notifications
-- [ ] **Calendar Integration**: Due dates and scheduling
+Add localStorage or backend integration for persistent data storage.
+Implement task prioritization and categories.
+Add user authentication for personalized task lists.
+Enhance accessibility with ARIA attributes and keyboard navigation.
+Include task due dates and reminders.
 
-## 🤝 Contributing
-
-We welcome contributions! Here's how you can help:
-
-1. **Fork the repository**
-2. **Create a feature branch** (`git checkout -b feature/amazing-feature`)
-3. **Commit your changes** (`git commit -m 'Add amazing feature'`)
-4. **Push to the branch** (`git push origin feature/amazing-feature`)
-5. **Open a Pull Request**
-
-### Development Guidelines
-- Follow existing code style and conventions
-- Write descriptive commit messages
-- Test thoroughly across different browsers
-- Update documentation as needed
-
-## 📁 Project Structure
-
-```
-taskflow-todo-app/
-├── index.html              # Main HTML file
-├── README.md              # Project documentation
-├── assets/                # Images and media files
-│   └── screenshots/       # App screenshots
-├── css/                   # Stylesheets (if separated)
-├── js/                    # JavaScript files (if separated)
-└── docs/                  # Additional documentation
-```
-
-## 📱 Browser Support
-
-| Browser | Version |
-|---------|---------|
-| Chrome  | 60+ ✅  |
-| Firefox | 55+ ✅  |
-| Safari  | 11+ ✅  |
-| Edge    | 79+ ✅  |
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-```
-MIT License
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction...
-```
-
-## 👨‍💻 Author
-
-**Your Name**
-- GitHub: [@yourusername](https://github.com/yourusername)
-- LinkedIn: [Your LinkedIn](https://linkedin.com/in/yourprofile)
-- Email: your.email@example.com
-
-## 🙏 Acknowledgments
-
-- **FreeCodeCamp** - Design inspiration
-- **Glassmorphism.com** - UI design trends
-- **Google Fonts** - Typography
-- **CSS Gradient Generator** - Beautiful gradients
-
-## 📊 Stats
-
-![GitHub stars](https://img.shields.io/github/stars/yourusername/taskflow-todo-app?style=social)
-![GitHub forks](https://img.shields.io/github/forks/yourusername/taskflow-todo-app?style=social)
-![GitHub issues](https://img.shields.io/github/issues/yourusername/taskflow-todo-app)
-![GitHub license](https://img.shields.io/github/license/yourusername/taskflow-todo-app)
-
----
-
-<div align="center">
-  <h3>🌟 If you found this project helpful, please give it a star! 🌟</h3>
-  <p>Made with ❤️ and lots of ☕</p>
-</div>
+Contributing
+Contributions are welcome! Please fork the repository, make changes, and submit a pull request with a clear description of your improvements.
